@@ -54,9 +54,9 @@ Archaeological research often involves the analysis of images to identify and cl
 | Model                 | Accuracy | Precision | Recall   |
 |-----------------------|----------|-----------|----------|
 | InceptionV3           | 0.86     | 0.86      | 0.86     |
-| Efficientnet          |          |           |          |
-| ResNet                |          |           |          |
-| VGG                   |          |           |          |
+| Efficientnet          | 0.83     | 0.85      | 0.83     |
+| ResNet                | 0.80     | 0.81      | 0.82     |
+| VGG                   | 0.75     | 0.76      | 0.75     |
 
 
 
