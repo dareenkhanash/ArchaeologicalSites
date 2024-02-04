@@ -1,19 +1,29 @@
 
-### Complete Technical Documentation
+## Image Classification for Archaeological Sites using Pre-trained Models
+
+### Overview
+Archaeological research often involves the analysis of images to identify and classify various archaeological sites. In this project, we aim to develop a deep learning model for automated image classification of archaeological sites. The utilization of pre-trained models will play a crucial role in achieving accurate and efficient results.
 ---
 
-#### Overview
-This Jupyter notebook is a comprehensive guide to applying various pre-trained models in deep learning for image processing. It includes initial setup, data preprocessing, model customization, training, and evaluation, with a focus on image classification tasks using deep neural networks.
-
+### Objectives
+   - Develop a deep learning model for image classification
+   - Evaluate multiple pre-trained models: InceptionV3, Efficientnet, ResNet, VGGNet
+   - Compare and analyze the performance of each model
+   - Provide a user-friendly demo using Gradio or streamlit
 ---
 
-#### Dependencies and Setup
+### Dependencies and Setup
 - **Python Libraries:** Extensive use of libraries such as NumPy, Pandas, TensorFlow Keras, Scikit-learn, and PIL for data manipulation, model building, and image processing.
 - **Pre-trained Models:** Use of models like InceptionV3, EfficientNetB0, ResNet50, and VGG16 from TensorFlow Keras.
 - **Data Handling:** Methods for loading, processing, and augmenting image data for neural network training.
-
 ---
 
+#### Data Collection
+    - Utilized the TripAdvisor website as the primary source for gathering image data.
+    - Focused on six distinct archaeological sites: Umm Qais, Jerash, Petra, Ajloun Castle, Wadi Rum, and the Roman Amphitheater.
+    - Systematically collected approximately 500 to 800 images for each archaeological site class.
+    
+---
 #### Preprocessing Steps
 1. **Image Loading and Conversion:** Detailed methods for loading images and converting them into a suitable format for neural network input.
 2. **Data Augmentation:** Application of various techniques to enhance the dataset and prevent overfitting.
@@ -37,27 +47,36 @@ This Jupyter notebook is a comprehensive guide to applying various pre-trained m
 ---
 
 #### Results and Visualizations
-- **Model Performance:** Insights into the performance of each model, including accuracy and loss metrics.
-- **Visualizations:** Interpretation of any plots or confusion matrices provided in the notebook to illustrate model performance.
+
+| Model                 | Accuracy | Precision | Recall   |
+|-----------------------|----------|-----------|----------|
+| InceptionV3           | 0.86     | 0.86      | 0.86     |
+| Efficientnet          |          |           |          |
+| ResNet                |          |           |          |
+| VGG                   |          |           |          |
+
+
+
+# Live App 
+To experience the live app, please visit:
+
+https://huggingface.co/spaces/DareenY/archaeological_sites
 
 ---
 
 
+
+### Complete Technical Documentation
+---
+
 # Requirements 
 
-To download requirements run 
+To download all requirements run:
 ```python
 pip install -r requirements.txt
 
 ```
 
-# Data Path
-
-For testing live app please visit:
-
-https://huggingface.co/spaces/DareenY/archaeological_sites
-
-# Preprocessing Data
 
 # Function to load and preprocess images
 def load_and_preprocess_data(output_folder):
