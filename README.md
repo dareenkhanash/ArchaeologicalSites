@@ -1,15 +1,17 @@
 
-## Image Classification for Archaeological Sites using Pre-trained Models
+# Image Classification for Archaeological Sites using Pre-trained Models
 
 ### Overview
+
 Archaeological research often involves the analysis of images to identify and classify various archaeological sites. In this project, we aim to develop a deep learning model for automated image classification of archaeological sites. The utilization of pre-trained models will play a crucial role in achieving accurate and efficient results.
+
 ---
 
 ### Objectives
-   - Develop a deep learning model for image classification
-   - Evaluate multiple pre-trained models: InceptionV3, Efficientnet, ResNet, VGGNet
-   - Compare and analyze the performance of each model
-   - Provide a user-friendly demo using Gradio or streamlit
+- Develop a deep learning model for image classification
+- Evaluate multiple pre-trained models: InceptionV3, Efficientnet, ResNet, VGGNet
+- Compare and analyze the performance of each model
+- Provide a user-friendly demo using Gradio or streamlit
 ---
 
 ### Dependencies and Setup
@@ -18,20 +20,21 @@ Archaeological research often involves the analysis of images to identify and cl
 - **Data Handling:** Methods for loading, processing, and augmenting image data for neural network training.
 ---
 
-#### Data Collection
-    - Utilized the TripAdvisor website as the primary source for gathering image data.
-    - Focused on six distinct archaeological sites: Umm Qais, Jerash, Petra, Ajloun Castle, Wadi Rum, and the Roman Amphitheater.
-    - Systematically collected approximately 500 to 800 images for each archaeological site class.
+### Data Collection
+- Utilized the TripAdvisor website as the primary source for gathering image data.
+- Focused on six distinct archaeological sites: Umm Qais, Jerash, Petra, Ajloun Castle, Wadi Rum, and the Roman Amphitheater.
+- Systematically collected approximately 500 to 800 images for each archaeological site class.
     
 ---
-#### Preprocessing Steps
+
+### Preprocessing Steps
 1. **Image Loading and Conversion:** Detailed methods for loading images and converting them into a suitable format for neural network input.
 2. **Data Augmentation:** Application of various techniques to enhance the dataset and prevent overfitting.
 3. **Model-Specific Preprocessing:** Use of specific preprocessing functions for each model to ensure compatibility with input data.
 
 ---
 
-#### Model Descriptions
+### Model Descriptions
 - **InceptionV3:** Efficient for classifying images into numerous categories.
 - **EfficientNetB0:** Balances model scaling in depth, width, and resolution.
 - **ResNet50:** Utilizes residual connections for training deeper networks.
@@ -39,14 +42,14 @@ Archaeological research often involves the analysis of images to identify and cl
 
 ---
 
-#### Code Explanation
+### Code Explanation
 - **Model Customization:** Details on how each model is loaded and customized with additional layers for specific tasks.
 - **Training Process:** Description of the training process, including hyperparameters and optimization techniques.
 - **Performance Metrics:** Explanation of the metrics used to evaluate model effectiveness.
 
 ---
 
-#### Results and Visualizations
+### Results and Visualizations
 
 | Model                 | Accuracy | Precision | Recall   |
 |-----------------------|----------|-----------|----------|
