@@ -72,6 +72,89 @@ To download all requirements, run:
 pip install -r requirements.txt
 
 ```
+# InceptionV3 Model
+## Loading images and preprocessing 
+```python
+def load_image_and_label(image_paths, target_size=(299, 299)):
+    images = []
+    labels = []
+
+    for image_path in image_paths:
+        image = load_img(image_path, target_size=target_size)
+        image = img_to_array(image)
+
+        label = image_path.split(os.path.sep)[-2]
+        images.append(image)
+        labels.append(label)
+
+    return np.array(images), np.array(labels)
+```
+```python
+load_image_and_label(image_paths)
+x = x.astype('float') / 255.0
+y = LabelBinarizer().fit_transform(y)
+```
+## Splitting data 
+```python
+#InceptionV3_train_test_split
+(x_train, x_test, y_train, y_test) = train_test_split(x, y, test_size=0.2, random_state=SEED)
+```
+## Data augmentation
+```python
+# Generates augmented batches of training data using Keras' ImageDataGenerator.
+def augmenter(x_train, y_train, batch_size=30):
+    data_generator = ImageDataGenerator( 
+    rotation_range=30,
+    horizontal_flip=True,
+    width_shift_range=0.1,
+    height_shift_range=0.2,
+    shear_range=0.2, 
+    zoom_range=0.2, 
+    fill_mode='nearest'
+    )
+
+    train_generator = data_generator.flow(x_train, y_train, batch_size)
+    return train_generator
+
+train_generator = augmenter(x_train, y_train, batch_size=BATCH_SIZE)
+```
+## Load the InceptionV3 model with pre-trained weights on ImageNet
+```python
+base_model = InceptionV3(weights='imagenet', include_top=False, input_shape=(299, 299, 3))
+```
+## Freeze the layers of the InceptionV3 base model and build a new network
+```python
+for layer in base_model.layers:
+    layer.trainable = False
+
+x = base_model.output
+x = Flatten()(base_model.output)
+x = Dense(units=1024)(x)
+x = ReLU()(x)
+x = BatchNormalization()(x)
+x = Dropout(rate=0.5)(x)
+x = Dense(units=num_classes)(x)
+output = Softmax()(x)
+```
+## Create the fine-tuned model
+```python
+models.Model(inputs=base_model.input, outputs=output)
+```
+## Compile the model with the correct learning rate argument
+```python
+model.compile(loss='categorical_crossentropy', optimizer=RMSprop(learning_rate=1e-3), metrics=['accuracy'])
+```
+
+## Create the early stopping callback
+```python
+early_stopping = EarlyStopping(monitor='val_loss', patience=5, restore_best_weights=True)
+```
+
+## Train the model with early stopping
+```python
+model.fit(train_generator, validation_data=(x_test, y_test), epochs=EPOCHS, callbacks=[early_stopping])
+```
+
 
 
 ## Function to load and preprocess images for the VGG16, ResNet50, and EfficientNetB0 Models
@@ -161,52 +244,6 @@ labels_encoded = to_categorical(labels)
 label_to_site
 ```
 
-# InceptionV3 Model
-```python
-#InceptionV3_train_test_split
-X_train, X_test, y_train, y_test = train_test_split(data['inception'], labels_encoded, test_size=0.2, random_state=42)
-```
-## Load the InceptionV3 model with pre-trained weights on ImageNet
-```python
-InceptionV3_base_model = InceptionV3(weights='imagenet', include_top=False, input_shape=(299, 299, 3))
-```
-## Freeze the layers of the InceptionV3 base model
-```python
-for layer in InceptionV3_base_model.layers:
-    layer.trainable = False
-
-
-x = InceptionV3_base_model.output
-x = Flatten()(InceptionV3_base_model.output)
-x = Dense(units=1024)(x)
-x = ReLU()(x)
-x = BatchNormalization()(x)
-x = Dropout(rate=0.5)(x)
-x = Dense(units=num_classes)(x)
-output = Softmax()(x)
-```
-## Create the fine-tuned model
-```python
-InceptionV3_fine_tuned_model = Model(inputs=InceptionV3_base_model.input, outputs=output)
-```
-## Compile the model with the correct learning rate argument
-```python
-InceptionV3_fine_tuned_model.compile(optimizer=Adam(learning_rate=0.001), loss='categorical_crossentropy', metrics=['accuracy'])
-```
-
-## Create the early stopping callback
-```python
-early_stopping_InceptionV3 = EarlyStopping(monitor='val_loss', patience=1, restore_best_weights=True)
-```
-
-## Train the model with early stopping
-```python
-InceptionV3_fine_tuned_model.fit(X_train, y_train, 
-                     epochs=15, batch_size=32, 
-                     validation_data=(X_test, y_test), 
-                     callbacks=[early_stopping_InceptionV3])
-
-```
 
 # EfficientNetB0 Model
 
