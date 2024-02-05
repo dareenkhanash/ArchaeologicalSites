@@ -20,6 +20,7 @@ Archaeological research often involves the analysis of images to identify and cl
 - Approximately 500 to 800 images were systematically collected for each archaeological site class.
 
 The dataset used in this project is located within the designated "data" folder.
+
 ---
 
 ### Preprocessing Steps
@@ -42,9 +43,9 @@ The dataset used in this project is located within the designated "data" folder.
 | Model                 | Accuracy | Precision | Recall   |
 |-----------------------|----------|-----------|----------|
 | InceptionV3           | 0.86     | 0.86      | 0.86     |
-| Efficientnet          | 0.83     | 0.85      | 0.83     |
-| ResNet                | 0.80     | 0.81      | 0.82     |
-| VGG                   | 0.75     | 0.76      | 0.75     |
+| EfficientNetB0        | 0.83     | 0.85      | 0.83     |
+| ResNet50              | 0.80     | 0.81      | 0.82     |
+| VGG16                 | 0.75     | 0.76      | 0.75     |
 
 
 
@@ -61,10 +62,10 @@ To experience the live app, please visit: [Live App Link](https://huggingface.co
 ---
 
 
-### Complete Technical Documentation
+# Complete Technical Documentation
 ---
 
-# Requirements 
+## Requirements 
 
 To download all requirements, run:
 ```python
@@ -73,7 +74,8 @@ pip install -r requirements.txt
 ```
 
 
-# Function to load and preprocess images
+## Function to load and preprocess images for the VGG16, ResNet50, and EfficientNetB0 Models
+```python
 def load_and_preprocess_data(output_folder):
     data_inception = []
     data_efficientnet = []
@@ -146,120 +148,76 @@ def load_and_preprocess_data(output_folder):
         "resnet": np.array(data_resnet),
         "vgg": np.array(data_vgg),
     }, np.array(labels)
+```
 
-# Call the function
+## Call the function
+```python
 data, labels = load_and_preprocess_data(main_folder)
 
-```python
 label_to_site = {labels: site for labels, site in enumerate(os.listdir(main_folder))}
 np.unique(labels)
 labels_encoded = to_categorical(labels)
-```
 
-```python
 label_to_site
 ```
 
 # InceptionV3 Model
-
+```python
 #InceptionV3_train_test_split
 X_train, X_test, y_train, y_test = train_test_split(data['inception'], labels_encoded, test_size=0.2, random_state=42)
-
-# Load the InceptionV3 model with pre-trained weights on ImageNet
+```
+## Load the InceptionV3 model with pre-trained weights on ImageNet
+```python
 InceptionV3_base_model = InceptionV3(weights='imagenet', include_top=False, input_shape=(299, 299, 3))
-
-# Freeze the layers of the InceptionV3 base model
+```
+## Freeze the layers of the InceptionV3 base model
+```python
 for layer in InceptionV3_base_model.layers:
     layer.trainable = False
 
-```python
+
 x = InceptionV3_base_model.output
-x = GlobalAveragePooling2D()(x)
-x = Dense(600, activation='relu', kernel_regularizer=l2(0.001))(x)
-x = Dropout(0.5)(x)
-
-predictions = Dense(len(label_to_site), activation='softmax')(x)
-
-# Create the fine-tuned model
-InceptionV3_fine_tuned_model = Model(inputs=InceptionV3_base_model.input, outputs=predictions)
-
-# Compile the model with the correct learning rate argument
+x = Flatten()(InceptionV3_base_model.output)
+x = Dense(units=1024)(x)
+x = ReLU()(x)
+x = BatchNormalization()(x)
+x = Dropout(rate=0.5)(x)
+x = Dense(units=num_classes)(x)
+output = Softmax()(x)
+```
+## Create the fine-tuned model
+```python
+InceptionV3_fine_tuned_model = Model(inputs=InceptionV3_base_model.input, outputs=output)
+```
+## Compile the model with the correct learning rate argument
+```python
 InceptionV3_fine_tuned_model.compile(optimizer=Adam(learning_rate=0.001), loss='categorical_crossentropy', metrics=['accuracy'])
+```
 
-# Create the early stopping callback
+## Create the early stopping callback
+```python
 early_stopping_InceptionV3 = EarlyStopping(monitor='val_loss', patience=1, restore_best_weights=True)
 ```
 
-# Train the model with early stopping
+## Train the model with early stopping
+```python
 InceptionV3_fine_tuned_model.fit(X_train, y_train, 
                      epochs=15, batch_size=32, 
                      validation_data=(X_test, y_test), 
                      callbacks=[early_stopping_InceptionV3])
 
-```python
-InceptionV3_losses = pd.DataFrame(InceptionV3_fine_tuned_model.history.history)
-InceptionV3_losses
 ```
 
-```python
-InceptionV3_losses.plot()
-```
-
-```python
-InceptionV3_pred = InceptionV3_fine_tuned_model.predict(X_test)
-```
-
-```python
-y_test[0] , InceptionV3_pred[0]
-```
-
-```python
-InceptionV3_post =np.where(InceptionV3_pred >= 0.5, 1,0)
-```
-
-```python
-InceptionV3_pred[0], InceptionV3_post[0], y_test[0]
-```
-
-```python
-InceptionV3_pred.min(),InceptionV3_pred.max(), InceptionV3_pred.mean()
-```
-
-#classification_report for Inception model
-print(classification_report(y_test, InceptionV3_post))
-
-#Test some images using InceptionV3 prediction
-test_InceptionV3_image = "/kaggle/input/finaltest/3.jpeg"
-
-# Load and preprocess the image
-img = image.load_img(test_InceptionV3_image, target_size=(224, 224))
-img_array = image.img_to_array(img)
-img_array = np.expand_dims(img_array, axis=0)
-img_array = preprocess_inception(img_array)
-
-# Make a prediction
-predictions = InceptionV3_fine_tuned_model.predict(img_array)
-
-num_classes = 6
-predicted_class_index = np.argmax(predictions)
-predicted_class_label = label_to_site[predicted_class_index]
-
-print(f"Predicted Class: {predicted_class_label}")
-
-
-# Save the weights to an H5 file
-InceptionV3_fine_tuned_model.save('Final_Inception_model.h5')
-
-# **EfficientNetB0 Model**
+# EfficientNetB0 Model
 
 #train_test_split EfficientNetB0 data
 from sklearn.model_selection import train_test_split
 X_train, X_test, y_train, y_test = train_test_split(data['efficientnet'], labels_encoded, test_size=0.2, random_state=42)
 
-# Load the EfficientNetB0 model with pre-trained weights on ImageNet
+## Load the EfficientNetB0 model with pre-trained weights on ImageNet
 Efficientnet_base_model = EfficientNetB0(weights='imagenet', include_top=False, input_shape=(224, 224, 3))
 
-# Freeze the layers of the base model
+## Freeze the layers of the base model
 for layer in Efficientnet_base_model.layers:
     layer.trainable = False
 
@@ -271,16 +229,16 @@ x = Dropout(0.5)(x)
 
 predictions = Dense(len(label_to_site), activation='softmax')(x)
 
-# Create the fine-tuned model
+## Create the fine-tuned model
 fine_tuned_efficientnet_model = Model(inputs=Efficientnet_base_model.input, outputs=predictions)
 
-# Compile the model
+## Compile the model
 fine_tuned_efficientnet_model.compile(optimizer=Adam(lr=0.001), loss='categorical_crossentropy', metrics=['accuracy'])
 
-# Create the early stopping callback
+## Create the early stopping callback
 Efficientnet_early_stopping = EarlyStopping(monitor='val_loss', patience=3, restore_best_weights=True)
 
-# Train the model with early stopping
+## Train the model with early stopping
 fine_tuned_efficientnet_model.fit(X_train, y_train, 
                      epochs=10, batch_size=32, 
                      validation_data=(X_test, y_test), 
@@ -309,13 +267,13 @@ print(classification_report(y_test, efficientnet_post))
 #Test some images using InceptionV3 model
 test_EfficientNetB0_image = "/kaggle/input/finaltest/3.jpeg"
 
-# Load and preprocess the image
+## Load and preprocess the image
 img = image.load_img(test_EfficientNetB0_image, target_size=(224, 224))
 img_array = image.img_to_array(img)
 img_array = np.expand_dims(img_array, axis=0)
 img_array = preprocess_efficientnet(img_array)
 
-# Make a prediction
+## Make a prediction
 predictions = fine_tuned_efficientnet_model.predict(img_array)
 
 num_classes = 6
@@ -325,7 +283,7 @@ predicted_class_label = label_to_site[predicted_class_index]
 print(f"Predicted Class: {predicted_class_label}")
 
 
-# Save to H5 file
+## Save to H5 file
 fine_tuned_efficientnet_model.save('Final_efficientnet_model.h5')
 
 # ResNet50 Model
@@ -333,10 +291,10 @@ fine_tuned_efficientnet_model.save('Final_efficientnet_model.h5')
 #ResNet50_Model_train_test_split
 X_train, X_test, y_train, y_test = train_test_split(data['resnet'], labels_encoded, test_size=0.2, random_state=42)
 
-# Load the ResNet50 model with pre-trained weights on ImageNet
+## Load the ResNet50 model with pre-trained weights on ImageNet
 resnet_base_model = ResNet50(weights='imagenet', include_top=False, input_shape=(224, 224, 3))
 
-# Freeze the layers of the base model
+## Freeze the layers of the base model
 for layer in resnet_base_model.layers:
     layer.trainable = False
 
@@ -366,7 +324,7 @@ fine_tuned_resnet_model.compile(optimizer='Adam', loss='categorical_crossentropy
 resnet_early_stopping = EarlyStopping(monitor='val_loss', patience=1,verbose=1,restore_best_weights=True)
 ```
 
-# Train the model with early stopping
+## Train the model with early stopping
 fine_tuned_resnet_model.fit(X_train, y_train, 
                      epochs=20, batch_size=32, 
                      validation_data=(X_test, y_test), 
@@ -399,13 +357,13 @@ fine_tuned_resnet_model.save('Final_RESNET_model.h5')
 #Test some images using RESNET model
 test_resnet_image = "/kaggle/input/finaltest/3.jpeg"
 
-# Load and preprocess the image
+## Load and preprocess the image
 img = image.load_img(test_resnet_image, target_size=(224, 224))
 img_array = image.img_to_array(img)
 img_array = np.expand_dims(img_array, axis=0)
 img_array = preprocess_resnet(img_array)
 
-# Make a prediction
+## Make a prediction
 predictions = fine_tuned_resnet_model.predict(img_array)
 
 num_classes = 6
@@ -420,10 +378,10 @@ print(f"Predicted Class: {predicted_class_label}")
 #vgg_Model_train_test_split
 X_train, X_test, y_train, y_test = train_test_split(data['vgg'], labels_encoded, test_size=0.2, random_state=42)
 
-# Load the vgg model with pre-trained weights on ImageNet
+## Load the vgg model with pre-trained weights on ImageNet
 vgg_base_model = VGG16(weights='imagenet', include_top=False, input_shape=(224, 224, 3))
 
-# Freeze the layers of the base model
+## Freeze the layers of the base model
 for layer in vgg_base_model.layers:
     layer.trainable = False
 
@@ -449,7 +407,7 @@ fine_tuned_vgg_model.compile(optimizer=Adam(lr=0.001), loss='categorical_crossen
 vgg_early_stopping = EarlyStopping(monitor='val_loss', patience=2, restore_best_weights=True)
 ```
 
-# Train the model with early stopping
+## Train the model with early stopping
 fine_tuned_vgg_model.fit(X_train, y_train, 
                          epochs=30, batch_size=32, 
                          validation_data=(X_test, y_test), 
@@ -495,11 +453,3 @@ print(f"Predicted Class: {predicted_class_label}")
 ```python
 fine_tuned_vgg_model.save('Final_VGG_model.h5')
 ```
-
-```python
-
-```
-
-
-
-
