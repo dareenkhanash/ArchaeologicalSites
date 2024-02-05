@@ -3,28 +3,23 @@
 
 ### Overview
 
-Archaeological research often involves the analysis of images to identify and classify various archaeological sites. In this project, we aim to develop a deep learning model for automated image classification of archaeological sites. The utilization of pre-trained models will play a crucial role in achieving accurate and efficient results.
+Archaeological research often involves the analysis of images to identify and classify various archaeological sites. In this project, we are developing an advanced deep learning model that automatically classifies images of archaeological sites, with the utilization of pre-trained models that plays a crucial role in achieving accurate and efficient results.
 
----
-
-### Objectives
-- Develop a deep learning model for image classification
-- Evaluate multiple pre-trained models: InceptionV3, Efficientnet, ResNet, VGGNet
-- Compare and analyze the performance of each model
-- Provide a user-friendly demo using Gradio or streamlit
 ---
 
 ### Dependencies and Setup
+
 - **Python Libraries:** Extensive use of libraries such as NumPy, Pandas, TensorFlow Keras, Scikit-learn, and PIL for data manipulation, model building, and image processing.
 - **Pre-trained Models:** Use of models like InceptionV3, EfficientNetB0, ResNet50, and VGG16 from TensorFlow Keras.
 - **Data Handling:** Methods for loading, processing, and augmenting image data for neural network training.
 ---
 
 ### Data Collection
-- Utilized the TripAdvisor website as the primary source for gathering image data.
+- The primary source for gathering image data was the TripAdvisor website.
 - Focused on six distinct archaeological sites: Umm Qais, Jerash, Petra, Ajloun Castle, Wadi Rum, and the Roman Amphitheater.
-- Systematically collected approximately 500 to 800 images for each archaeological site class.
-    
+- Approximately 500 to 800 images were systematically collected for each archaeological site class.
+
+The dataset used in this project is located within the designated "data" folder.
 ---
 
 ### Preprocessing Steps
@@ -34,18 +29,11 @@ Archaeological research often involves the analysis of images to identify and cl
 
 ---
 
-### Model Descriptions
+### Models Description
 - **InceptionV3:** Efficient for classifying images into numerous categories.
 - **EfficientNetB0:** Balances model scaling in depth, width, and resolution.
 - **ResNet50:** Utilizes residual connections for training deeper networks.
 - **VGG16:** Employs small convolutional filters in deep architectures.
-
----
-
-### Code Explanation
-- **Model Customization:** Details on how each model is loaded and customized with additional layers for specific tasks.
-- **Training Process:** Description of the training process, including hyperparameters and optimization techniques.
-- **Performance Metrics:** Explanation of the metrics used to evaluate model effectiveness.
 
 ---
 
@@ -61,12 +49,16 @@ Archaeological research often involves the analysis of images to identify and cl
 
 
 # Live App 
-To experience the live app, please visit:
-
-https://huggingface.co/spaces/DareenY/archaeological_sites
+To experience the live app, please visit: [Live App Link](https://huggingface.co/spaces/DareenY/archaeological_sites).
 
 ---
 
+### Code Explanation
+- **Model Customization:** Details on how each model is loaded and customized with additional layers for specific tasks.
+- **Training Process:** Description of the training process, including hyperparameters and optimization techniques.
+- **Performance Metrics:** Explanation of the metrics used to evaluate model effectiveness.
+
+---
 
 
 ### Complete Technical Documentation
@@ -74,7 +66,7 @@ https://huggingface.co/spaces/DareenY/archaeological_sites
 
 # Requirements 
 
-To download all requirements run:
+To download all requirements, run:
 ```python
 pip install -r requirements.txt
 
@@ -507,3 +499,7 @@ fine_tuned_vgg_model.save('Final_VGG_model.h5')
 ```python
 
 ```
+
+
+
+
